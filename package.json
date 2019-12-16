@@ -8,7 +8,7 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "node_modules/.bin/mocha -r ts-node/register -r test/hookJsdom.js test/**/*.test.*",
+    "test": "node_modules/.bin/mocha -r ts-node/register test/**/*.test.*",
     "clean": "rm -rf dist",
     "build": "tsc",
     "docs": "typedoc --options typedoc.ts && node docs-clean.js",

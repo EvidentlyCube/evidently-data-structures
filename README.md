@@ -6,6 +6,7 @@ A collection of various data structures and related classes:
 
 * `Grid2D` - A two dimensional array
 * `FastPool` - A fast [object pool](https://sourcemaking.com/design_patterns/object_pool) that has no checks ensuring valid behavior.
+* `SlowPool` - Compatible with `FastPool` it's slightly slower and prevents certain  issues.
 
 ## Documentation
 

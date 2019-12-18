@@ -1,6 +1,6 @@
 {
   "name": "evidently-data-structures",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "TypeScript powered set of data structures with the intent of being used in game development.",
   "main": "dist/index.js",
   "files": [
@@ -20,6 +20,7 @@
     "data structures",
     "array",
     "grid",
+    "pooling",
     "typescript",
     "gamedev",
     "clean"

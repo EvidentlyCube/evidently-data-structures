@@ -42,7 +42,7 @@ describe("SpatialGrid2D", () => {
 			let wasInsertAtCalled = false;
 			const object = {
 				x: 3,
-				y: 7
+				y: 7,
 			};
 			const grid = new SpatialGrid2D(9, 7, 3, 4);
 			grid.insertAt = () => {
@@ -51,7 +51,7 @@ describe("SpatialGrid2D", () => {
 
 			grid.insert(object);
 			assert.isTrue(wasInsertAtCalled);
-		})
+		});
 	});
 	describe("insertAt", () => {
 		it("Error when insertAting out of bounds", () => {
@@ -107,7 +107,7 @@ describe("SpatialGrid2D", () => {
 			let wasRemoveAtCalled = false;
 			const object = {
 				x: 3,
-				y: 7
+				y: 7,
 			};
 			const grid = new SpatialGrid2D(9, 7, 3, 4);
 			grid.removeAt = () => {
@@ -116,7 +116,7 @@ describe("SpatialGrid2D", () => {
 
 			grid.remove(object);
 			assert.isTrue(wasRemoveAtCalled);
-		})
+		});
 	});
 	describe("removeAt", () => {
 		it("Error when position out of bounds", () => {
@@ -236,8 +236,8 @@ describe("SpatialGrid2D", () => {
 	describe("clear", () => {
 		it("Should remove everything from the grid and reset size", () => {
 			const grid = new SpatialGrid2D(9, 7, 3, 4);
-			for (let i = 0; i < 9; i++) {
-				for (let j = 0; j < 7; j++) {
+			for(let i = 0; i < 9; i++) {
+				for(let j = 0; j < 7; j++) {
 					grid.insertAt(i, j, {});
 					grid.insertAt(i, j, {});
 				}
@@ -245,8 +245,8 @@ describe("SpatialGrid2D", () => {
 
 			grid.clear();
 			assert.equal(grid.size, 0);
-			for (let i = 0; i < 9; i++) {
-				for (let j = 0; j < 7; j++) {
+			for(let i = 0; i < 9; i++) {
+				for(let j = 0; j < 7; j++) {
 					assert.isEmpty(grid.get(i, j));
 				}
 			}
@@ -284,7 +284,7 @@ describe("SpatialGrid2D", () => {
 					assert.strictEqual(element, item);
 					assert.strictEqual(x, 8);
 					assert.strictEqual(y, 7);
-				}
+				},
 			});
 
 			grid.insertAt(8, 7, item);
@@ -295,6 +295,35 @@ describe("SpatialGrid2D", () => {
 		});
 	});
 
+	describe('forEach', () => {
+		it("Iterates over every item in the spatial grid", () => {
+			let id = 0;
+			const expected: any[] = [];
+			const grid = new SpatialGrid2D<any>(9, 9, 3, 3);
+			for(let x = 0; x < 9; x++) {
+				for(let y = 0; y < 9; y++) {
+					for(let i = 0; i < 3; i++) {
+						const item = {id: id++, x, y};
+						expected.push(item);
+						grid.insertAt(x, y, item);
+					}
+				}
+			}
+
+			const given: any[] = [];
+			grid.forEach(((element, x, y) => {
+				assert.equal(element.x, x);
+				assert.equal(element.y, y);
+				given.push(element);
+			}));
+
+			given.sort((left, right) => left.id - right.id);
+			expected.sort((left, right) => left.id - right.id);
+
+			assert.deepEqual(given, expected);
+		});
+	});
+
 	describe("Performance", () => {
 		it("Retrieving from a mostly empty bucket should be much faster than from a filled bucket", () => {
 			const grid = new SpatialGrid2D(9, 9, 3, 4);
@@ -302,8 +331,8 @@ describe("SpatialGrid2D", () => {
 			function fillBucket(bucketX: number, bucketY: number, fillTime: number): void {
 				const startTime = Date.now();
 				while (Date.now() < startTime + fillTime) {
-					for (let i = 0; i < 3; i++) {
-						for (let j = 0; j < 4; j++) {
+					for(let i = 0; i < 3; i++) {
+						for(let j = 0; j < 4; j++) {
 							grid.insertAt(bucketX * 3 + i, bucketY * 4 + j, {});
 						}
 					}

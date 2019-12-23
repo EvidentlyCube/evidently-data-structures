@@ -367,6 +367,20 @@ export class SpatialGrid2D<TElement> {
 	}
 
 	/**
+	 * Iterates over every element in the grid
+	 * @param SpatialGrid2DDestroyCallback<TElement> callback Function called on each element
+	 */
+	public forEach(callback: SpatialGrid2DDestroyCallback<TElement>): void {
+		for (const row of this._buckets) {
+			for (const bucket of row) {
+				for (const item of bucket) {
+					callback(item.value, item.x, item.y);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Removes every element from the grid.
 	 */
 	public clear(): void {

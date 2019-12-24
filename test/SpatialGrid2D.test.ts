@@ -9,6 +9,27 @@ function timeCall(callback: () => void): number {
 	return Date.now() - startTime;
 }
 
+function createPopulatedGrid(width: number, height: number, bucketWidth: number, bucketHeight: number, outElements?: any[]): SpatialGrid2D<any> {
+	let id = 0;
+	outElements = outElements || [];
+	const grid = new SpatialGrid2D<any>(width, height, bucketWidth, bucketHeight);
+	for(let x = 0; x < 9; x++) {
+		for(let y = 0; y < 9; y++) {
+			for(let i = 0; i < 3; i++) {
+				const item = {id: id++, x, y};
+				outElements.push(item);
+				grid.insertAt(x, y, item);
+			}
+		}
+	}
+
+	return grid;
+}
+
+function sortArrayOfCreatedElements(elements: any[]): void {
+	elements.sort((left, right) => left.id - right.id);
+}
+
 describe("SpatialGrid2D", () => {
 	describe('constructor', () => {
 		it("Properties set in constructor are then correctly retrieved", () => {
@@ -297,18 +318,8 @@ describe("SpatialGrid2D", () => {
 
 	describe('forEach', () => {
 		it("Iterates over every item in the spatial grid", () => {
-			let id = 0;
 			const expected: any[] = [];
-			const grid = new SpatialGrid2D<any>(9, 9, 3, 3);
-			for(let x = 0; x < 9; x++) {
-				for(let y = 0; y < 9; y++) {
-					for(let i = 0; i < 3; i++) {
-						const item = {id: id++, x, y};
-						expected.push(item);
-						grid.insertAt(x, y, item);
-					}
-				}
-			}
+			const grid = createPopulatedGrid(9, 9, 3, 3, expected);
 
 			const given: any[] = [];
 			grid.forEach(((element, x, y) => {
@@ -317,8 +328,35 @@ describe("SpatialGrid2D", () => {
 				given.push(element);
 			}));
 
-			given.sort((left, right) => left.id - right.id);
-			expected.sort((left, right) => left.id - right.id);
+			sortArrayOfCreatedElements(given);
+			sortArrayOfCreatedElements(expected);
+
+			assert.deepEqual(given, expected);
+		});
+	});
+
+	describe("getAll", () => {
+		it("Returns all elements in the spatial grid as an array", () => {
+			const expected: any[] = [];
+			const grid = createPopulatedGrid(9, 9, 3, 3, expected);
+			const given = grid.getAll();
+
+			sortArrayOfCreatedElements(expected);
+			sortArrayOfCreatedElements(given);
+
+			assert.deepEqual(given, expected);
+		});
+	});
+
+	describe("getFiltered", () => {
+		it("Returns some elements in the spatial grid as an array", () => {
+			const elements: any[] = [];
+			const grid = createPopulatedGrid(9, 9, 3, 3, elements);
+			const given = grid.getFiltered(value => value.id % 3 === 0);
+			const expected = elements.filter(value => value.id % 3 === 0);
+
+			sortArrayOfCreatedElements(expected);
+			sortArrayOfCreatedElements(given);
 
 			assert.deepEqual(given, expected);
 		});

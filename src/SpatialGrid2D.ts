@@ -16,7 +16,7 @@ interface WithPosition {
 
 /**
  * This is a type alias for a function that's called on each element that is removed
- * in the resize operation.
+ * in the resize operation, as well as in `forEach` method.
  * @typeparam TElement The type of the element as provided by SpatialGrid2D used.
  */
 type SpatialGrid2DDestroyCallback<TElement> =
@@ -26,6 +26,20 @@ type SpatialGrid2DDestroyCallback<TElement> =
  * @param {number} y Y position in the grid.
  */
 	{ (element: TElement, x: number, y: number): void };
+
+
+/**
+ * This is a type alias for a function that's called in `getFiltered`
+ * @typeparam TElement The type of the element as provided by SpatialGrid2D used.
+ */
+type SpatialGrid2DFilterCallback<TElement> =
+/**
+ * @param {TElement} element Element in question
+ * @param {number} x X position in the grid.
+ * @param {number} y Y position in the grid.
+ * @return {boolean} True when element should be kept in the resulting array
+ */
+	{ (element: TElement, x: number, y: number): boolean };
 
 /**
  * Optional configuration for the  [[SpatialGrid2D]] class
@@ -345,8 +359,8 @@ export class SpatialGrid2D<TElement> {
 		}
 
 		for(const row of this._buckets) {
-			for (const bucket of row) {
-				for (const item of bucket) {
+			for(const bucket of row) {
+				for(const item of bucket) {
 					if (item.x >= gridWidth || item.y >= gridHeight) {
 						this._config.destructorCallback?.(item.value, item.x, item.y);
 						item.value = undefined;
@@ -368,12 +382,12 @@ export class SpatialGrid2D<TElement> {
 
 	/**
 	 * Iterates over every element in the grid
-	 * @param SpatialGrid2DDestroyCallback<TElement> callback Function called on each element
+	 * @param {SpatialGrid2DDestroyCallback<TElement>} callback Function called on each element
 	 */
 	public forEach(callback: SpatialGrid2DDestroyCallback<TElement>): void {
-		for (const row of this._buckets) {
-			for (const bucket of row) {
-				for (const item of bucket) {
+		for(const row of this._buckets) {
+			for(const bucket of row) {
+				for(const item of bucket) {
 					callback(item.value, item.x, item.y);
 				}
 			}
@@ -384,9 +398,9 @@ export class SpatialGrid2D<TElement> {
 	 * Removes every element from the grid.
 	 */
 	public clear(): void {
-		for (const row of this._buckets) {
-			for (const bucket of row) {
-				for (const item of bucket) {
+		for(const row of this._buckets) {
+			for(const bucket of row) {
+				for(const item of bucket) {
 					item.value = undefined;
 					itemPool.release(item);
 					this._size--;
@@ -394,5 +408,37 @@ export class SpatialGrid2D<TElement> {
 				bucket.length = 0;
 			}
 		}
+	}
+
+	public getAll(): TElement[] {
+		const elements = [];
+
+		for(const row of this._buckets) {
+			for(const bucket of row) {
+				for(const item of bucket) {
+					elements.push(item.value);
+				}
+			}
+		}
+
+		return elements;
+	}
+
+	public getFiltered(callback: SpatialGrid2DFilterCallback<TElement>): TElement[] {
+		const elements = [];
+
+		for (let x = 0; x < this._buckets.length; x++){
+			const row = this._buckets[x];
+			for(let y = 0; y < row.length; y++) {
+				const bucket = row[y];
+				for(const item of bucket) {
+					if (callback(item.value, x, y)) {
+						elements.push(item.value);
+					}
+				}
+			}
+		}
+
+		return elements;
 	}
 }

@@ -362,6 +362,16 @@ describe("SpatialGrid2D", () => {
 		});
 	});
 
+	describe("getFirst", () => {
+		it("Returns the first element that returns true on the callback", () => {
+			const elements: any[] = [];
+			const grid = createPopulatedGrid(9, 9, 3, 3, elements);
+			const expected = elements.find(value => value.id === 77);
+
+			assert.deepEqual(grid.getFirst(value => value.id === 77), expected);
+		});
+	});
+
 	describe("Performance", () => {
 		it("Retrieving from a mostly empty bucket should be much faster than from a filled bucket", () => {
 			const grid = new SpatialGrid2D(9, 9, 3, 4);

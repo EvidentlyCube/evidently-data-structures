@@ -410,6 +410,10 @@ export class SpatialGrid2D<TElement> {
 		}
 	}
 
+	/**
+	 * Returns every element from the spatial grid in an array.
+	 * @return {TElement[]}
+	 */
 	public getAll(): TElement[] {
 		const elements = [];
 
@@ -424,6 +428,11 @@ export class SpatialGrid2D<TElement> {
 		return elements;
 	}
 
+	/**
+	 * Returns all elements from the spatial grid for which the callback returns true.
+	 * @param {SpatialGrid2DFilterCallback<TElement>} callback
+	 * @return {TElement[]}
+	 */
 	public getFiltered(callback: SpatialGrid2DFilterCallback<TElement>): TElement[] {
 		const elements = [];
 
@@ -440,5 +449,27 @@ export class SpatialGrid2D<TElement> {
 		}
 
 		return elements;
+	}
+
+	/**
+	 * Returns the first element from the spatial grid for which the callback returns true
+	 * or undefined when nothing is found.
+	 * @param {SpatialGrid2DFilterCallback<TElement>} callback
+	 * @return {TElement|undefined}
+	 */
+	public getFirst(callback: SpatialGrid2DFilterCallback<TElement>): TElement|undefined {
+		for (let x = 0; x < this._buckets.length; x++){
+			const row = this._buckets[x];
+			for(let y = 0; y < row.length; y++) {
+				const bucket = row[y];
+				for(const item of bucket) {
+					if (callback(item.value, x, y)) {
+						return item.value;
+					}
+				}
+			}
+		}
+
+		return undefined;
 	}
 }

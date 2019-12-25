@@ -1,6 +1,6 @@
 {
   "name": "evidently-data-structures",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "TypeScript powered set of data structures with the intent of being used in game development.",
   "main": "dist/index.js",
   "files": [
